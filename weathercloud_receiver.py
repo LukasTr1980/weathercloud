@@ -1,48 +1,19 @@
 import socket
-import requests
 
 def extract_rainrate(data):
-    # Convert the data to a string
-    data_str = data.decode('utf-8')
+    # Convert the received data to a string
+    data = data.decode()
+    lines = data.split('\n')  # Split the data into lines
 
-    # Split the data into lines
-    lines = data_str.split('\n')
-
-    # Search for the rainrate parameter in the lines
+    # Loop through the lines and find the line containing 'rainrate='
     for line in lines:
-        if 'wdir=' in line:
-            # Extract the rainrate value from the line
-            rainrate = line.split('=')[1]
-
-            # Convert the rainrate value to a float
-            rainrate = float(rainrate)
-
-            # Return the rainrate value
+        if 'rainrate=' in line:
+            start_index = line.index('rainrate=') + len('rainrate=')
+            end_index = line.index('&', start_index)  # Find the end index of the value
+            rainrate = line[start_index:end_index]  # Extract the rainrate value
             return rainrate
 
     return None
-
-def set_rainrate(saved_rainrate):
-    # Define the Simple API endpoint URL
-    url = 'http://localhost:8087/setObject'
-
-    # Define the object ID and value to set
-    object_id = 'javascript.0.Wetterstation.Weathercloud_Regenrate'
-
-    # Define the request body as a JSON object
-    data = {
-        'id': object_id,
-        'val': saved_rainrate
-    }
-
-    # Send the HTTP POST request to the Simple API endpoint
-    response = requests.post(url, json=data)
-
-    # Check the response status code
-    if response.status_code != 200:
-        print('Error setting value:', response.text)
-    else:
-        print('Value set successfully:', saved_rainrate)
 
 def start_server():
     # Define the server's host and port
@@ -57,24 +28,23 @@ def start_server():
 
     # Listen for incoming connections
     server_socket.listen(1)
+    print(f"Listening on {host}:{port}...")
 
     while True:
         # Accept a client connection
         client_socket, client_address = server_socket.accept()
+        print(f"Received connection from {client_address[0]}:{client_address[1]}")
 
         # Receive data from the client
         data = client_socket.recv(1024)
         if data:
+            print("Received data:")
+            print(data.decode())
+
             # Extract the rainrate parameter
             rainrate = extract_rainrate(data)
             if rainrate is not None:
-                # Save the rainrate value to a variable
-                saved_rainrate = rainrate
-
-                # Set the rainrate value in ioBroker using the Simple API
-                set_rainrate(saved_rainrate)
-            else:
-                print('No rainrate parameter found in request:', data)
+                print("Rainrate:", rainrate)
 
         # Close the client connection
         client_socket.close()
