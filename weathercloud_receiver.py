@@ -21,14 +21,11 @@ def send_to_iobroker(wdir):
     adapter_url = 'http://localhost:8087'
     state_id = 'javascript.0.Wetterstation.Weathercloud_Regenrate'  # Replace with the actual state ID in ioBroker
 
-    # Prepare the payload
-    payload = {
-        'val': wdir,
-        'ack': True
-    }
+    # Prepare the URL with the value, type, and ack flag
+    url = f"{adapter_url}/set/{state_id}?value={wdir}&type=number&ack=true&prettyPrint"
 
     # Send the data to ioBroker
-    response = requests.post(f'{adapter_url}/set/{state_id}', json=payload)
+    response = requests.get(url)
     if response.status_code == 200:
         print('Data sent to ioBroker successfully.')
     else:
