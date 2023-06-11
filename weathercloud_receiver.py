@@ -1,28 +1,28 @@
 import socket
 import requests
 
-def extract_wdir(data):
+def extract_rainrate(data):
     # Convert the received data to a string
     data = data.decode()
     lines = data.split('\n')  # Split the data into lines
 
-    # Loop through the lines and find the line containing 'wdir='
+    # Loop through the lines and find the line containing 'rainrate='
     for line in lines:
-        if 'wdir=' in line:
-            start_index = line.index('wdir=') + len('wdir=')
+        if 'rainrate=' in line:
+            start_index = line.index('rainrate=') + len('rainrate=')
             end_index = line.index('&', start_index)  # Find the end index of the value
-            wdir = line[start_index:end_index]  # Extract the wind direction value
-            return wdir
+            rainrate = line[start_index:end_index]  # Extract the rainrate value
+            return rainrate
 
     return None
 
-def send_to_iobroker(wdir):
+def send_to_iobroker(rainrate):
     # ioBroker Simple API Adapter configuration
     adapter_url = 'http://localhost:8087'
     state_id = 'javascript.0.Wetterstation.Weathercloud_Regenrate'  # Replace with the actual state ID in ioBroker
 
     # Prepare the URL with the value
-    url = f"{adapter_url}/set/{state_id}?value={wdir}&ack=true"
+    url = f"{adapter_url}/set/{state_id}?value={rainrate}&ack=true"
 
     # Send the data to ioBroker
     response = requests.get(url)
@@ -57,13 +57,13 @@ def start_server():
             print("Received data:")
             print(data.decode())
 
-            # Extract the wind direction parameter
-            wdir = extract_wdir(data)
-            if wdir is not None:
-                print("Wind Direction:", wdir)
+            # Extract the rainrate parameter
+            rainrate = extract_rainrate(data)
+            if rainrate is not None:
+                print("Rainrate:", rainrate)
 
-                # Send the wind direction value to ioBroker
-                send_to_iobroker(wdir)
+                # Send the rainrate value to ioBroker
+                send_to_iobroker(rainrate)
 
         # Close the client connection
         client_socket.close()
