@@ -22,7 +22,7 @@ def send_to_iobroker(wdir):
     state_id = 'javascript.0.Wetterstation.Weathercloud_Regenrate'  # Replace with the actual state ID in ioBroker
 
     # Prepare the URL with the value
-    url = f"{adapter_url}/set/{state_id}?value={wdir}"
+    url = f"{adapter_url}/set/{state_id}?value={wdir}&ack=true"
 
     # Send the data to ioBroker
     response = requests.get(url)
