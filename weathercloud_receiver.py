@@ -1,5 +1,10 @@
-import socket
 import requests
+import socket
+
+def convert_inches_to_mm(rainrate_inches):
+    # Convert inches to millimeters
+    rainrate_mm = rainrate_inches * 25.4
+    return rainrate_mm
 
 def extract_rainrate(data):
     # Convert the received data to a string
@@ -11,8 +16,12 @@ def extract_rainrate(data):
         if 'rainrate=' in line:
             start_index = line.index('rainrate=') + len('rainrate=')
             end_index = line.index('&', start_index)  # Find the end index of the value
-            rainrate = line[start_index:end_index]  # Extract the rainrate value
-            return rainrate
+            rainrate_inches = float(line[start_index:end_index])  # Extract the rainrate value in inches
+
+            # Convert inches to millimeters
+            rainrate_mm = convert_inches_to_mm(rainrate_inches)
+
+            return rainrate_mm
 
     return None
 
@@ -60,7 +69,7 @@ def start_server():
             # Extract the rainrate parameter
             rainrate = extract_rainrate(data)
             if rainrate is not None:
-                print("Rainrate:", rainrate)
+                print("Rainrate in mm:", rainrate)
 
                 # Send the rainrate value to ioBroker
                 send_to_iobroker(rainrate)
