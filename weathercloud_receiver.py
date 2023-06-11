@@ -28,23 +28,19 @@ def start_server():
 
     # Listen for incoming connections
     server_socket.listen(1)
-    print(f"Listening on {host}:{port}...")
 
     while True:
         # Accept a client connection
         client_socket, client_address = server_socket.accept()
-        print(f"Received connection from {client_address[0]}:{client_address[1]}")
 
         # Receive data from the client
         data = client_socket.recv(1024)
         if data:
-            print("Received data:")
-            print(data.decode())
-
             # Extract the rainrate parameter
             rainrate = extract_rainrate(data)
             if rainrate is not None:
-                print("Rainrate:", rainrate)
+                # Save the rainrate value to a variable
+                saved_rainrate = rainrate
 
         # Close the client connection
         client_socket.close()
