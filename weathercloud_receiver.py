@@ -1,4 +1,5 @@
 import socket
+import requests
 
 def extract_wdir(data):
     # Convert the received data to a string
@@ -14,6 +15,24 @@ def extract_wdir(data):
             return wdir
 
     return None
+
+def send_to_iobroker(wdir):
+    # ioBroker Simple API Adapter configuration
+    adapter_url = 'http://localhost:8087'
+    state_id = 'javascript.0.Wetterstation.Weathercloud_Regenrate'  # Replace with the actual state ID in ioBroker
+
+    # Prepare the payload
+    payload = {
+        'val': wdir,
+        'ack': True
+    }
+
+    # Send the data to ioBroker
+    response = requests.post(f'{adapter_url}/set/{state_id}', json=payload)
+    if response.status_code == 200:
+        print('Data sent to ioBroker successfully.')
+    else:
+        print(f'Failed to send data to ioBroker. Error: {response.status_code}')
 
 def start_server():
     # Define the server's host and port
@@ -45,6 +64,9 @@ def start_server():
             wdir = extract_wdir(data)
             if wdir is not None:
                 print("Wind Direction:", wdir)
+
+                # Send the wind direction value to ioBroker
+                send_to_iobroker(wdir)
 
         # Close the client connection
         client_socket.close()
