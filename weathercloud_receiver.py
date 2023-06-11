@@ -1,17 +1,17 @@
 import socket
 
-def extract_rainrate(data):
+def extract_wdir(data):
     # Convert the received data to a string
     data = data.decode()
     lines = data.split('\n')  # Split the data into lines
 
-    # Loop through the lines and find the line containing 'rainrate='
+    # Loop through the lines and find the line containing 'wdir='
     for line in lines:
-        if 'rainrate=' in line:
-            start_index = line.index('rainrate=') + len('rainrate=')
+        if 'wdir=' in line:
+            start_index = line.index('wdir=') + len('wdir=')
             end_index = line.index('&', start_index)  # Find the end index of the value
-            rainrate = line[start_index:end_index]  # Extract the rainrate value
-            return rainrate
+            wdir = line[start_index:end_index]  # Extract the wind direction value
+            return wdir
 
     return None
 
@@ -41,10 +41,10 @@ def start_server():
             print("Received data:")
             print(data.decode())
 
-            # Extract the rainrate parameter
-            rainrate = extract_rainrate(data)
-            if rainrate is not None:
-                print("Rainrate:", rainrate)
+            # Extract the wind direction parameter
+            wdir = extract_wdir(data)
+            if wdir is not None:
+                print("Wind Direction:", wdir)
 
         # Close the client connection
         client_socket.close()
