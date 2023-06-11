@@ -17,15 +17,12 @@ def extract_wdir(data):
     return None
 
 def send_to_iobroker(wdir):
-    # Convert wdir to float
-    wdir_float = float(wdir)
-
     # ioBroker Simple API Adapter configuration
     adapter_url = 'http://localhost:8087'
     state_id = 'javascript.0.Wetterstation.Weathercloud_Regenrate'  # Replace with the actual state ID in ioBroker
 
-    # Prepare the URL with the value, type, and ack flag
-    url = f"{adapter_url}/set/{state_id}?value={wdir_float}"
+    # Prepare the URL with the value
+    url = f"{adapter_url}/set/{state_id}?value={wdir}"
 
     # Send the data to ioBroker
     response = requests.get(url)
