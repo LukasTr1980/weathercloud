@@ -1,4 +1,5 @@
 import socket
+import requests
 
 def extract_rainrate(data):
     # Convert the received data to a string
@@ -14,6 +15,26 @@ def extract_rainrate(data):
             return rainrate
 
     return None
+
+def set_rainrate(saved_rainrate):
+    # Define the Simple API endpoint URL
+    url = 'http://localhost:8087/setObject'
+
+    # Define the object ID and value to set
+    object_id = 'javascript.0.Wetterstation.Weathercloud_Regenrate'
+
+    # Define the request body as a JSON object
+    data = {
+        'id': object_id,
+        'val': saved_rainrate
+    }
+
+    # Send the HTTP POST request to the Simple API endpoint
+    response = requests.post(url, json=data)
+
+    # Check the response status code
+    if response.status_code != 200:
+        print('Error setting value:', response.text)
 
 def start_server():
     # Define the server's host and port
@@ -41,6 +62,9 @@ def start_server():
             if rainrate is not None:
                 # Save the rainrate value to a variable
                 saved_rainrate = rainrate
+
+                # Set the rainrate value in ioBroker using the Simple API
+                set_rainrate(saved_rainrate)
 
         # Close the client connection
         client_socket.close()
