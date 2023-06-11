@@ -2,16 +2,22 @@ import socket
 import requests
 
 def extract_rainrate(data):
-    # Convert the received data to a string
-    data = data.decode()
-    lines = data.split('\n')  # Split the data into lines
+    # Convert the data to a string
+    data_str = data.decode('utf-8')
 
-    # Loop through the lines and find the line containing 'rainrate='
+    # Split the data into lines
+    lines = data_str.split('\n')
+
+    # Search for the rainrate parameter in the lines
     for line in lines:
-        if 'rainrate=' in line:
-            start_index = line.index('rainrate=') + len('rainrate=')
-            end_index = line.index('&', start_index)  # Find the end index of the value
-            rainrate = line[start_index:end_index]  # Extract the rainrate value
+        if 'wdir=' in line:
+            # Extract the rainrate value from the line
+            rainrate = line.split('=')[1]
+
+            # Convert the rainrate value to a float
+            rainrate = float(rainrate)
+
+            # Return the rainrate value
             return rainrate
 
     return None
@@ -35,6 +41,8 @@ def set_rainrate(saved_rainrate):
     # Check the response status code
     if response.status_code != 200:
         print('Error setting value:', response.text)
+    else:
+        print('Value set successfully:', saved_rainrate)
 
 def start_server():
     # Define the server's host and port
@@ -65,6 +73,8 @@ def start_server():
 
                 # Set the rainrate value in ioBroker using the Simple API
                 set_rainrate(saved_rainrate)
+            else:
+                print('No rainrate parameter found in request:', data)
 
         # Close the client connection
         client_socket.close()
