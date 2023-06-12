@@ -1,11 +1,6 @@
 import requests
 import socket
 
-def convert_inches_to_mm(rainrate_inches):
-    # Convert inches to millimeters
-    rainrate_mm = rainrate_inches * 25.4
-    return rainrate_mm
-
 def extract_rainrate(data):
     # Convert the received data to a string
     data = data.decode()
@@ -16,11 +11,7 @@ def extract_rainrate(data):
         if 'rainrate=' in line:
             start_index = line.index('rainrate=') + len('rainrate=')
             end_index = line.index('&', start_index)  # Find the end index of the value
-            rainrate_inches = float(line[start_index:end_index])  # Extract the rainrate value in inches
-
-            # Convert inches to millimeters
-            rainrate_mm = convert_inches_to_mm(rainrate_inches)
-
+            rainrate_mm = float(line[start_index:end_index])  # Extract the rainrate value in millimeters
             return rainrate_mm
 
     return None
