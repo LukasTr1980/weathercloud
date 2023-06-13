@@ -16,13 +16,19 @@ def extract_rainrate(data):
 
     return None
 
+def divide_by_10(value):
+    return value / 10
+
 def send_to_iobroker(rainrate):
+    # Divide the rainrate value by 10
+    rainrate_divided = divide_by_10(rainrate)
+
     # ioBroker Simple API Adapter configuration
     adapter_url = 'http://localhost:8087'
     state_id = 'javascript.0.Wetterstation.Weathercloud_Regenrate'  # Replace with the actual state ID in ioBroker
 
     # Prepare the URL with the value
-    url = f"{adapter_url}/set/{state_id}?value={rainrate}&ack=true"
+    url = f"{adapter_url}/set/{state_id}?value={rainrate_divided}&ack=true"
 
     # Send the data to ioBroker
     response = requests.get(url)
