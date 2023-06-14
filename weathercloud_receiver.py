@@ -16,12 +16,12 @@ def extract_rainrate(data):
 
     return None
 
-def divide_by_10(value):
-    return value / 10
+def divide_by_100(value):
+    return value / 100
 
 def send_to_iobroker(rainrate):
-    # Divide the rainrate value by 10
-    rainrate_divided = divide_by_10(rainrate)
+    # Divide the rainrate value by 100
+    rainrate_divided = divide_by_100(rainrate)
 
     # ioBroker Simple API Adapter configuration
     adapter_url = 'http://localhost:8087'
