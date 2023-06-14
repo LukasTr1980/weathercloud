@@ -1,5 +1,5 @@
-import requests
 import socket
+import requests
 
 def extract_rainrate(data):
     # Convert the received data to a string
@@ -11,24 +11,18 @@ def extract_rainrate(data):
         if 'rainrate=' in line:
             start_index = line.index('rainrate=') + len('rainrate=')
             end_index = line.index('&', start_index)  # Find the end index of the value
-            rainrate_mm = float(line[start_index:end_index])  # Extract the rainrate value in millimeters
+            rainrate_mm = line[start_index:end_index]  # Extract the rainrate value in millimeters as a string
             return rainrate_mm
 
     return None
 
-def divide_by_100(value):
-    return value / 100
-
 def send_to_iobroker(rainrate):
-    # Divide the rainrate value by 100
-    rainrate_divided = divide_by_100(rainrate)
-
     # ioBroker Simple API Adapter configuration
     adapter_url = 'http://localhost:8087'
     state_id = 'javascript.0.Wetterstation.Weathercloud_Regenrate'  # Replace with the actual state ID in ioBroker
 
     # Prepare the URL with the value
-    url = f"{adapter_url}/set/{state_id}?value={rainrate_divided}&ack=true"
+    url = f"{adapter_url}/set/{state_id}?value={rainrate}&ack=true"
 
     # Send the data to ioBroker
     response = requests.get(url)
