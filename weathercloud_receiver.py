@@ -111,32 +111,45 @@ def start_server():
     print(f"Listening on {host}:{port}...")
 
     while True:
-        # Accept a client connection
-        client_socket, client_address = server_socket.accept()
-        print(f"Received connection from {client_address[0]}:{client_address[1]}")
+        try:
+            # Accept a client connection
+            client_socket, client_address = server_socket.accept()
+            print(f"Received connection from {client_address[0]}:{client_address[1]}")
 
-        # Receive data from the client
-        data = client_socket.recv(1024)
-        if data:
-            print("Received data:")
-            print(data.decode())
+            # Receive data from the client
+            data = client_socket.recv(1024)
+            if data:
+                print("Received data:")
+                print(data.decode())
 
-            # Extract the rainrate parameter
-            rainrate = extract_rainrate(data)
-            if rainrate is not None:
-                print("Rainrate in mm:", rainrate)
+                # Extract the rainrate parameter
+                rainrate = extract_rainrate(data)
+                if rainrate is not None:
+                    print("Rainrate in mm:", rainrate)
 
-                # Send the rainrate value to ioBroker
-                send_to_iobroker(rainrate)
+                    try:
+                        # Send the rainrate value to ioBroker
+                        send_to_iobroker(rainrate)
+                    except Exception as e:
+                        print(f"An error occurred while sending to ioBroker: {str(e)}")
+                        # Handle the exception for sending to ioBroker here
 
-                # Send all data to weathercloud.net via HTTPS
-                response = forward_to_weathercloud(data)
+                    try:
+                        # Send all data to weathercloud.net via HTTPS
+                        response = forward_to_weathercloud(data)
 
-                # Send the response from Weathercloud back to the client
-                client_socket.send(response)
+                        # Send the response from Weathercloud back to the client
+                        client_socket.send(response)
+                    except Exception as e:
+                        print(f"An error occurred while forwarding to Weathercloud: {str(e)}")
+                        # Handle the exception for forwarding to Weathercloud here
 
-        # Close the client connection
-        client_socket.close()
+            # Close the client connection
+            client_socket.close()
+
+        except Exception as e:
+            print(f"An error occurred: {str(e)}")
+            # Handle other exceptions here if needed
 
 # Start the server
 start_server()
