@@ -7,7 +7,7 @@ import dns.resolver
 dns_server = '8.8.8.8'
 
 # Configure a custom resolver using the specified DNS server
-resolver = dns.resolver.Resolver()
+resolver = dns.resolver.Resolver(configure=False)
 resolver.nameservers = [dns_server]
 
 # Use the custom resolver in the requests module
