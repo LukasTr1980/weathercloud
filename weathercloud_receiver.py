@@ -1,7 +1,18 @@
 import urllib.parse
 import requests
 import socket
-from dns_resolver import resolve_dns
+import dns.resolver
+
+# Specify the IP address of the DNS server you want to use
+dns_server = '8.8.8.8'
+
+# Configure a custom resolver using the specified DNS server
+resolver = dns.resolver.Resolver()
+resolver.nameservers = [dns_server]
+
+# Use the custom resolver in the requests module
+requests.adapters.DEFAULT_RETRIES = 3  # Increase the number of retries
+requests.adapters.DEFAULT_NAMESERVERS = resolver.nameservers
 
 def extract_rainrate(data):
     # Convert the received data to a string
@@ -71,15 +82,15 @@ def forward_to_weathercloud(ip_address, request):
     battery = params.get('battery', [''])[0]
     battery1 = params.get('battery1', [''])[0]
     ver = params.get('ver', [''])[0]
-    type_value = params.get('type', [''])[0]
+    type = params.get('type', [''])[0]
 
     # Send the data to Weathercloud using an HTTP GET request
-    url = f'https://{ip_address}/v01/set?wid={wid}&key={key}&date={date}&time={time}&tempin={tempin}&humin={humin}&temp={temp}&hum={hum}&temp1={temp1}&hum1={hum1}&dewin={dewin}&dew={dew}&dew1={dew1}&chill={chill}&chill1={chill1}&heatin={heatin}&heat={heat}&heat1={heat1}&thw={thw}&thw1={thw1}&bar={bar}&wspd={wspd}&wspdhi={wspdhi}&wdir={wdir}&wspdavg={wspdavg}&wdiravg={wdiravg}&rainrate={rainrate}&rain={rain}&solarrad={solarrad}&uvi={uvi}&battery={battery}&battery1={battery1}&ver={ver}&type={type}'
+    url = f'https://api.weathercloud.net/v01/set?wid={wid}&key={key}&date={date}&time={time}&tempin={tempin}&humin={humin}&temp={temp}&hum={hum}&temp1={temp1}&hum1={hum1}&dewin={dewin}&dew={dew}&dew1={dew1}&chill={chill}&chill1={chill1}&heatin={heatin}&heat={heat}&heat1={heat1}&thw={thw}&thw1={thw1}&bar={bar}&wspd={wspd}&wspdhi={wspdhi}&wdir={wdir}&wspdavg={wspdavg}&wdiravg={wdiravg}&rainrate={rainrate}&rain={rain}&solarrad={solarrad}&uvi={uvi}&battery={battery}&battery1={battery1}&ver={ver}&type={type}'
     
     print("Sending data to Weathercloud:")
     print(url)
     
-    response = requests.get(url, verify=False)
+    response = requests.get(url)
 
     # Return the response from Weathercloud to the client making the original request
     return response.content
@@ -117,12 +128,9 @@ def start_server():
 
                 # Send the rainrate value to ioBroker
                 send_to_iobroker(rainrate)
-                
-                # Get the IP address of weathercloud.net
-                ip_address = resolve_dns()
 
                 # Send all data to weathercloud.net via HTTPS
-                response = forward_to_weathercloud(ip_address, data)
+                response = forward_to_weathercloud(data)
 
                 # Send the response from Weathercloud back to the client
                 client_socket.send(response)
