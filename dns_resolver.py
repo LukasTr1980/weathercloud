@@ -17,5 +17,3 @@ def resolve_dns():
         print(f"The domain {domain_name} does not exist.")
     except dns.exception.DNSException as e:
         print(f"An error occurred: {e}")
-
-resolve_dns()
