@@ -35,7 +35,9 @@ def send_to_iobroker(rainrate):
 
 def forward_to_weathercloud(ip_address, request):
     # Extract the parameters from the HTTP GET request
-    params = urllib.parse.parse_qs(urllib.parse.urlparse(request).query)
+    parsed_request = urllib.parse.urlparse(request.decode())
+    params = urllib.parse.parse_qs(parsed_request.query)
+    
     wid = params['wid'][0]
     key = params['key'][0]
     date = params['date'][0]
