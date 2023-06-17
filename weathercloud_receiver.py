@@ -116,7 +116,10 @@ def start_server():
                 ip_address = resolve_dns()
 
                 # Send all data to weathercloud.net via HTTPS
-                forward_to_weathercloud(ip_address, data)
+                response = forward_to_weathercloud(ip_address, data)
+
+                # Send the response from Weathercloud back to the client
+                client_socket.send(response)
 
         # Close the client connection
         client_socket.close()
