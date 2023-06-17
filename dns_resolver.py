@@ -5,8 +5,8 @@ def resolve_dns():
     domain_name = 'api.weathercloud.net'
 
     # Create a resolver object
-    resolver = dns.resolver.Resolver()
-    resolver.nameservers = ['8.8.8.8']
+    resolver = dns.resolver.Resolver(configure=False)
+    resolver.nameservers = ['8.8.8.8']  # Replace with the IP address of your preferred DNS server
 
     try:
         # Make the DNS query for the A record of the domain
