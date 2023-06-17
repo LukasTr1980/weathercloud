@@ -73,6 +73,10 @@ def forward_to_weathercloud(ip_address, request):
 
     # Send the data to Weathercloud using an HTTP GET request
     url = f'https://{ip_address}/v01/set?wid={wid}&key={key}&date={date}&time={time}&tempin={tempin}&humin={humin}&temp={temp}&hum={hum}&temp1={temp1}&hum1={hum1}&dewin={dewin}&dew={dew}&dew1={dew1}&chill={chill}&chill1={chill1}&heatin={heatin}&heat={heat}&heat1={heat1}&thw={thw}&thw1={thw1}&bar={bar}&wspd={wspd}&wspdhi={wspdhi}&wdir={wdir}&wspdavg={wspdavg}&wdiravg={wdiravg}&rainrate={rainrate}&rain={rain}&solarrad={solarrad}&uvi={uvi}&battery={battery}&battery1={battery1}&ver={ver}&type={type}'
+    
+    print("Sending data to Weathercloud:")
+    print(url)
+    
     response = requests.get(url)
 
     # Return the response from Weathercloud to the client making the original request
