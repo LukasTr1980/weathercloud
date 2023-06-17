@@ -113,7 +113,7 @@ def start_server():
                 send_to_iobroker(rainrate)
                 
                 # Get the IP address of weathercloud.net
-                ip_address = resolve_dns('weathercloud.net')
+                ip_address = resolve_dns()
 
                 # Send all data to weathercloud.net via HTTPS
                 forward_to_weathercloud(ip_address, data)
