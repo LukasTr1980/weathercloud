@@ -91,6 +91,8 @@ def forward_to_weathercloud(request):
     print(url)
     
     response = requests.get(url)
+    print("Used IP address:", response.request.url)
+    print("Response from Weathercloud:", response.status_code, response.reason)
 
     # Return the response from Weathercloud to the client making the original request
     return response.content
