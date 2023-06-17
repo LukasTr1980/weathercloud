@@ -4,7 +4,7 @@ def resolve_dns():
     # Define the domain name to resolve
     domain_name = 'api.weathercloud.net'
 
-    # Create a resolver object
+    # Create a resolver object with configure=False
     resolver = dns.resolver.Resolver(configure=False)
     resolver.nameservers = ['8.8.8.8']  # Replace with the IP address of your preferred DNS server
 
@@ -13,7 +13,10 @@ def resolve_dns():
         response = resolver.resolve(domain_name, 'A')
         ip_addresses = [str(rdata) for rdata in response]
         print(f"The IP addresses of {domain_name} are: {', '.join(ip_addresses)}")
+        return ip_addresses[0]  # Return the first IP address
     except dns.resolver.NXDOMAIN:
         print(f"The domain {domain_name} does not exist.")
     except dns.exception.DNSException as e:
         print(f"An error occurred: {e}")
+    
+    return None
