@@ -44,7 +44,7 @@ def send_to_iobroker(rainrate):
     else:
         print(f'Failed to send data to ioBroker. Error: {response.status_code}')
 
-def forward_to_weathercloud(ip_address, request):
+def forward_to_weathercloud(request):
     # Extract the parameters from the HTTP GET request
     parsed_request = urllib.parse.urlparse(request.decode())
     params = urllib.parse.parse_qs(parsed_request.query)
