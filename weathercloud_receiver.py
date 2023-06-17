@@ -1,7 +1,7 @@
 import urllib.parse
 import requests
 import socket
-from dns_resolver import *
+from dns_resolver import resolve_dns
 
 def extract_rainrate(data):
     # Convert the received data to a string
