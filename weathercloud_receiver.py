@@ -1,7 +1,7 @@
 import socket
 import requests
 import dns.resolver
-from send_api_weathercloud_net.py import resolve_hostname, send_weathercloud
+from send_api_weathercloud_net import resolve_hostname, send_weathercloud
 
 def extract_rainrate(data):
     # Convert the received data to a string
