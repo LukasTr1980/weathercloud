@@ -60,9 +60,10 @@ def start_server():
             print(data.decode())
 
             # Send the data to Weathercloud
-            resolved_ip = resolve_hostname('api.weathercloud.net')
+            hostname = 'api.weathercloud.net'
+            resolved_ip = resolve_hostname(hostname)
             if resolved_ip is not None:
-                print("Resolved IP:", resolved_ip)
+                print(f"Resolved IP for {hostname}: {resolved_ip}")
                 send_weathercloud(resolved_ip, data)
 
             # Extract the rainrate parameter
