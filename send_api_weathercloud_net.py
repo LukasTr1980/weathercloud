@@ -28,8 +28,9 @@ def send_weathercloud(ip_address, data):
         query_string = data.decode().split(' ')[1]  # Get the query string from the HTTP GET request
         query_params = query_string.split('&')  # Split the query string into individual parameters
         for param in query_params:
-            key, value = param.split('=')
-            params[key] = value
+            if '=' in param:
+                key, value = param.split('=')
+                params[key] = value
 
         response = requests.get(url, params=params, headers=headers)
         response.raise_for_status()  # Raise an exception if the status code indicates an error
