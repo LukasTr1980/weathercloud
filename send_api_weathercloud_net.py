@@ -67,6 +67,10 @@ def send_weathercloud(ip_address, data):
                 if key in params:
                     params[key] = value
 
+        print('URL:', url)
+        print('Params:', params)
+        print('Headers:', headers)
+
         response = requests.get(url, params=params, headers=headers)
         response.raise_for_status()
         print('Data sent successfully to Weathercloud.')
