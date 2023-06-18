@@ -1,5 +1,7 @@
 import socket
 import requests
+import dns.resolver
+from send_api_weathercloud_net.py import resolve_hostname, send_weathercloud
 
 def extract_rainrate(data):
     # Convert the received data to a string
@@ -56,6 +58,12 @@ def start_server():
         if data:
             print("Received data:")
             print(data.decode())
+
+            # Send the data to Weathercloud
+            resolved_ip = resolve_hostname('api.weathercloud.net')
+            if resolved_ip is not None:
+                print("Resolved IP:", resolved_ip)
+                send_weathercloud(resolved_ip, data)
 
             # Extract the rainrate parameter
             rainrate = extract_rainrate(data)
