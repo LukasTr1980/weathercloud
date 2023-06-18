@@ -64,7 +64,9 @@ def send_weathercloud(ip_address, data):
         for param in query_params:
             if '=' in param:
                 key, value = param.split('=')
-                if key in params:
+                if key == 'wid':
+                    params['wid'] = value
+                elif key in params:
                     params[key] = value
 
         print('URL:', url)
