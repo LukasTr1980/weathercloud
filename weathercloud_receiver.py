@@ -29,7 +29,7 @@ def send_to_iobroker(rainrate):
     # Send the data to ioBroker
     response = requests.get(url)
     if response.status_code == 200:
-        print('Data sent to ioBroker successfully.')
+        print('Rainrate sent to ioBroker successfully.')
     else:
         print(f'Failed to send data to ioBroker. Error: {response.status_code}')
 

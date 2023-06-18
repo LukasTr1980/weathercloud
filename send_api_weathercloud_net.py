@@ -25,6 +25,6 @@ def send_weathercloud(ip_address, data):
     try:
         response = requests.get(url, params=data, headers=headers)
         response.raise_for_status()  # Raise an exception if the status code indicates an error
-        print('Data sent successfully')
+        print('Data sent successfully to Weathercloud.')
     except requests.exceptions.RequestException as e:
-        print('Error sending data:', e)
+        print('Error sending data to Weathercloud:', e)
