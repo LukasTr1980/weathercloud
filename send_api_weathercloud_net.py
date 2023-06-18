@@ -1,5 +1,6 @@
 import requests
 import dns.resolver
+from urllib.parse import urlparse, parse_qs
 
 def resolve_hostname(hostname):
     try:
@@ -60,14 +61,12 @@ def send_weathercloud(ip_address, data):
         }
 
         query_string = data.decode().split(' ')[1]
-        query_params = query_string.split('&')
-        for param in query_params:
-            if '=' in param:
-                key, value = param.split('=')
-                if key.startswith('wid'):
-                    params['wid'] = value
-                elif key in params:
-                    params[key] = value
+        query_params = parse_qs(urlparse(query_string).query)
+        for key, value in query_params.items():
+            if key.startswith('wid'):
+                params['wid'] = value[0]
+            elif key in params:
+                params[key] = value[0]
 
         print('URL:', url)
         print('Params:', params)
