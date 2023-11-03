@@ -52,6 +52,7 @@ def start_server():
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_socket.settimeout(10)
 
+    client_socket = None
     try:
         # Bind the socket to the host and port
         server_socket.bind((host, port))
@@ -95,7 +96,7 @@ def start_server():
         except Exception as e:
             logging.error(f'Unexpected error: {e}')
         finally:
-            # Close the client connection
-            client_socket.close()
+            if client_socket is not None:
+                client_socket.close()
 
 start_server()
