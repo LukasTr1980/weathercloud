@@ -1,6 +1,11 @@
 import requests
 import dns.resolver
+import logging
+import sys
 from urllib.parse import urlparse, parse_qs
+
+# Configure logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s', stream=sys.stdout)
 
 def resolve_hostname(hostname):
     try:
@@ -8,8 +13,8 @@ def resolve_hostname(hostname):
         resolver.nameservers = ['8.8.8.8']
         answer = resolver.resolve(hostname, 'A')
         return str(answer[0])
-    except:
-        print(f'Error resolving hostname {hostname}')
+    except Exception as e:
+        logging.error(f'Error resolving hostname {hostname}: {e}')
         return None
 
 def send_weathercloud(ip_address, data):
@@ -68,12 +73,14 @@ def send_weathercloud(ip_address, data):
             elif key in params:
                 params[key] = value[0]
 
-        print('URL:', url)
-        print('Params:', params)
-        print('Headers:', headers)
+        logging.info(f'URL: {url}')
+        logging.info(f'Params: {params}')
+        logging.info(f'Headers: {headers}')
 
         response = requests.get(url, params=params, headers=headers)
         response.raise_for_status()
-        print('Data sent successfully to Weathercloud.')
+        logging.info('Data sent successfully to Weathercloud.')
     except requests.exceptions.RequestException as e:
-        print('Error sending data to Weathercloud:', e)
+        logging.error(f'Network error sending data to Weathercloud: {e}')
+    except Exception as e:
+        logging.error(f'Unexpected error sending data to Weathercloud: {e}')
