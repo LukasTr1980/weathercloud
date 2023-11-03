@@ -50,7 +50,6 @@ def start_server():
 
     # Create a socket object
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server_socket.settimeout(10)
 
     client_socket = None
     try:
