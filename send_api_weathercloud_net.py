@@ -2,6 +2,7 @@ import requests
 import dns.resolver
 import logging
 import sys
+import time
 from urllib.parse import urlparse, parse_qs
 
 # Configure logging
@@ -77,10 +78,25 @@ def send_weathercloud(ip_address, data):
         logging.info(f'Params: {params}')
         logging.info(f'Headers: {headers}')
 
-        response = requests.get(url, params=params, headers=headers)
-        response.raise_for_status()
-        logging.info('Data sent successfully to Weathercloud.')
-    except requests.exceptions.RequestException as e:
-        logging.error(f'Network error sending data to Weathercloud: {e}')
+        max_retries = 3
+        timeout = 10  # seconds
+        for attempt in range(max_retries):
+            try:
+                response = requests.get(url, params=params, headers=headers, timeout=timeout)
+                response.raise_for_status()
+                logging.info('Data sent successfully to Weathercloud.')
+                break
+            except requests.exceptions.RequestException as e:
+                logging.error(f'Attempt {attempt + 1}: Network error sending data to Weathercloud: {e}')
+                if attempt < max_retries - 1:
+                    time.sleep(2)  # Delay before retrying
+                else:
+                    logging.error('Max retries reached. Giving up.')
+            except Exception as e:
+                logging.error(f'Unexpected error sending data to Weathercloud: {e}')
+                break
+
     except Exception as e:
-        logging.error(f'Unexpected error sending data to Weathercloud: {e}')
+        logging.error(f'Unexpected error: {e}')
+
+# Add any additional functions or code as needed
