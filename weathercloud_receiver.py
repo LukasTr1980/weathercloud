@@ -5,7 +5,7 @@ import time
 import sys
 import threading
 import os
-from urllib.parse import urlencode
+from urllib.parse import quote_plus
 from dotenv import load_dotenv
 from send_api_weathercloud_net import resolve_hostname, send_weathercloud
 
@@ -29,48 +29,39 @@ def extract_rainrate(data):
     return None
 
 def send_to_iobroker(rainrate, max_retries=10):
-    adapter_url = 'http://localhost:8087'
-    state_id = 'javascript.0.Wetterstation.Weathercloud_Regenrate'
+    base = 'http://localhost:8087'
+    state = 'javascript.0.Wetterstation.Weathercloud_Regenrate'
 
     user = os.getenv('IOBROKER_USER')
-    password = os.getenv('IOBROKER_PASSWORD')
+    pw = os.getenv('IOBROKER_PASSWORD')
 
-    #----- Check if the environment variables are set
-    for var, val in [('IOBROKER_USER', user), ('IOBROKER_PASSWORD', password)]:
-        if not val:
-            logging.warning(f"{var} is not set. Please check your .env file.")
-        elif "PASS" in var:
-            logging.info(f"{var}: {'*'*len(val)} (Len {len(val)})")
-        else:
-            logging.info(f"{var}: {val}")
+    params = (
+        f"value={rainrate}&ack=true"
+        + (f"&user={quote_plus(user)}&pass={quote_plus(pw)}" if user and pw else "")
+    )
 
-    #----- Prepare the URL with authentication if needed
-    params = {"value": rainrate, "ack": "true"}
-    if user and password:
-        params.update({"user": user, "pass": password})
-    
-    url = f"{adapter_url}/set/{state_id}"
-    masked_url = f"{url}?{urlencode(params).replace(password or '', '*'*len(password or ''))}"
-    logging.info(f"-> Call (PW masked): {masked_url}")
+    url = f"{base}/set/{state}?{params}"
 
-    auth_params = f"&user={user}&pass={password}" if user and password else ''
-    url = f"{adapter_url}/set/{state_id}?value={rainrate}&ack=true{auth_params}"
+    if pw:
+        encoded_pw = quote_plus(pw)
+        masked = url.replace(encoded_pw, '*' * len(encoded_pw))
+    else:
+        masked = url
+    logging.info("Final Url (PW masked): %s", masked)
 
     for _ in range(max_retries):
         try:
-            response = requests.get(url, timeout=10)  # Added timeout
-            if response.status_code == 200:
-                logging.info('Rainrate sent to ioBroker successfully.')
+            r = requests.get(url, timeout=5)
+            if r.status_code == 200:
+                logging.info('Rainrate ok (200).')
                 return
             else:
-                logging.warning(f'Failed to send data to ioBroker. Error: {response.status_code}')
+                logging.warning("HTTP %s - %s", r.status_code, r.text.strip())
         except requests.RequestException as e:
-            logging.error(f'Network error: {e}')
-
-        logging.info(f'Retrying in 5 seconds...')
+            logging.error("Network error: %s", e)
         time.sleep(5)
 
-    logging.error(f'Failed to send data to ioBroker after {max_retries} attempts.')
+    logging.error("Failed after %s retries.", max_retries)
 
 def start_server():
     host = 'localhost'
