@@ -4,7 +4,11 @@ import logging
 import time
 import sys
 import threading
+import os
+from dotenv import load_dotenv
 from send_api_weathercloud_net import resolve_hostname, send_weathercloud
+
+load_dotenv()
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s', stream=sys.stdout)
 
@@ -26,7 +30,12 @@ def extract_rainrate(data):
 def send_to_iobroker(rainrate, max_retries=10):
     adapter_url = 'http://localhost:8087'
     state_id = 'javascript.0.Wetterstation.Weathercloud_Regenrate'
-    url = f"{adapter_url}/set/{state_id}?value={rainrate}&ack=true"
+
+    user = os.getenv('IOBROKER_USER')
+    password = os.getenv('IOBROKER_PASSWORD')
+
+    auth_params = f"&user={user}&pass={password}" if user and password else ''
+    url = f"{adapter_url}/set/{state_id}?value={rainrate}&ack=true{auth_params}"
 
     for _ in range(max_retries):
         try:
@@ -89,4 +98,5 @@ def start_server():
             if client_socket is not None:
                 client_socket.close()
 
-start_server()
+if __name__ == "__main__":
+    start_server()
