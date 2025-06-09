@@ -5,6 +5,7 @@ import time
 import sys
 import threading
 import os
+from urllib.parse import urlencode
 from dotenv import load_dotenv
 from send_api_weathercloud_net import resolve_hostname, send_weathercloud
 
@@ -34,15 +35,23 @@ def send_to_iobroker(rainrate, max_retries=10):
     user = os.getenv('IOBROKER_USER')
     password = os.getenv('IOBROKER_PASSWORD')
 
-    if not user:
-        logging.error('IOBroker user is not set in the environment variables.')
-    else:
-        logging.info(f'Using IOBroker user: {user}')
+    #----- Check if the environment variables are set
+    for var, val in [('IOBROKER_USER', user), ('IOBROKER_PASSWORD', password)]:
+        if not val:
+            logging.warning(f"{var} is not set. Please check your .env file.")
+        elif "PASS" in var:
+            logging.info(f"{var}: {'*'*len(val)} (Len {len(val)})")
+        else:
+            logging.info(f"{var}: {val}")
 
-    if not password:
-        logging.error('IOBroker password is not set in the environment variables.')
-    else:
-        logging.info('IOBroker password is set in the environment variables.')
+    #----- Prepare the URL with authentication if needed
+    params = {"value": rainrate, "ack": "true"}
+    if user and password:
+        params.update({"user": user, "pass": password})
+    
+    url = f"{adapter_url}/set/{state_id}"
+    masked_url = f"{url}?{urlencode(params).replace(password or '', '*'*len(password or ''))}"
+    logging.info(f"-> Call (PW masked): {masked_url}")
 
     auth_params = f"&user={user}&pass={password}" if user and password else ''
     url = f"{adapter_url}/set/{state_id}?value={rainrate}&ack=true{auth_params}"
