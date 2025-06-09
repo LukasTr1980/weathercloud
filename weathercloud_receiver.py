@@ -34,6 +34,16 @@ def send_to_iobroker(rainrate, max_retries=10):
     user = os.getenv('IOBROKER_USER')
     password = os.getenv('IOBROKER_PASSWORD')
 
+    if not user:
+        logging.error('IOBroker user is not set in the environment variables.')
+    else:
+        logging.info(f'Using IOBroker user: {user}')
+
+    if not password:
+        logging.error('IOBroker password is not set in the environment variables.')
+    else:
+        logging.info('IOBroker password is set in the environment variables.')
+
     auth_params = f"&user={user}&pass={password}" if user and password else ''
     url = f"{adapter_url}/set/{state_id}?value={rainrate}&ack=true{auth_params}"
 
